@@ -1,13 +1,12 @@
-#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-using namespace std;
+#include "sudoku.h";
 typedef int strType[9];
 typedef strType sudoku[9];
 bool boolChange;
 sudoku numbers;
-int myindex;
+extern int myindex;
 int countNumbers;
 void getCoord (int *i, int *k, int hvb)
 {
@@ -79,7 +78,6 @@ void setPermission (int num, int i, int k, int hvb)
     else if(numbers[i][k]==(num|(1<<15)))
     {
         printf("Error\n");
-        exit(1);
     }
 }
 void setNum(int num,int i,int k,int hvb)
@@ -111,12 +109,12 @@ void setNum(int num,int i,int k,int hvb)
             boolChange=true;
             countNumbers++;
             numbers[i][k]=(num|(1<<15));
+            settedNum(num,i,k);
         }
     }
     else
     {
         printf("Error\n");
-        exit(1);
     }
 }
 void tree(void)
@@ -225,14 +223,16 @@ void tree(void)
         }
     }
 }
-void zeroNum()
+void zeroNum(int *array[9][9])
 {
     int i,k;
     for(i=0; i<9; i++)
     {
         for(k=0; k<9; k++)
         {
-            numbers[i][k]=0;
+            if(array[i][k]!=0){
+             setNum(array[i][k],i,k,0);
+            }
         }
     }
 }
@@ -338,61 +338,9 @@ void start()
         }
     }
 }
-void ioNum(bool thread)
+int mainSud(int *array[][])
 {
-    char i,k;
-    for(i=0; i<9; i++)
-    {
-        if(thread)
-        {
-            for(k=0; k<9; k++)
-            {
-                if(!(numbers[i][k]&(1<<15)))
-                {
-                    printf("%d",0);
-                }
-                else
-                {
-                    printf("%d",numbers[i][k]-(1<<15)+1);
-                }
-                if((k%3)==2)
-                {
-                    printf(" ");
-                }
-            }
-            printf("\n");
-        }
-        else
-        {
-            char a[10];
-            cin>>a;
-            if(strlen(a)!=9)
-            {
-                printf("Error\n");
-                i--;
-            }
-            else
-            {
-                for(k=0; k<9; k++)
-                {
-                    if(a[k]!=48)
-                    {
-                        setNum(a[k]-49,i,k,0);
-                    }
-                }
-            }
-        }
-        if((i%3)==2)
-        {
-            printf("\n");
-        }
-    }
-}
-int main()
-{
-    zeroNum();
-    ioNum(false);
+    zeroNum(array);
     start();
     printf("\n");
-    ioNum(true);
 }
