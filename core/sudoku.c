@@ -5,9 +5,9 @@
 typedef int strType[9];
 typedef strType sudoku[9];
 bool boolChange;
-sudoku numbers;
+sudoku mynumbers;
 extern int myindex;
-int countNumbers;
+int countmynumbers;
 void getCoord (int *i, int *k, int hvb)
 {
     int a, b;
@@ -31,13 +31,13 @@ void getCoord (int *i, int *k, int hvb)
 bool getPermission(int num,int i,int k,int hvb)
 {
     getCoord(&i,&k,hvb);
-    if(numbers[i][k]==(num&(1<<15)))
+    if(mynumbers[i][k]==(num&(1<<15)))
     {
         return(true);
     }
     else
     {
-        if(((numbers[i][k]&(1<<15))==0)&&((numbers[i][k]&(1<<num))==0))
+        if(((mynumbers[i][k]&(1<<15))==0)&&((mynumbers[i][k]&(1<<num))==0))
         {
             return(true);
         }
@@ -50,7 +50,7 @@ bool getPermission(int num,int i,int k,int hvb)
 int getNum(int i,int k,int hvb)
 {
     getCoord(&i,&k,hvb);
-    return(numbers[i][k]);
+    return(mynumbers[i][k]);
 }
 bool getPermission2(int num,int i,int k,int hvb)
 {
@@ -67,15 +67,15 @@ bool getPermission2(int num,int i,int k,int hvb)
 void setPermission (int num, int i, int k, int hvb)
 {
     getCoord (&i, &k, hvb);
-    if((numbers[i][k]&(1<<15))==0)
+    if((mynumbers[i][k]&(1<<15))==0)
     {
         if(getPermission(num,i,k,0))
         {
-            numbers[i][k]=numbers[i][k]|(1<<num);
+            mynumbers[i][k]=mynumbers[i][k]|(1<<num);
             boolChange=true;
         }
     }
-    else if(numbers[i][k]==(num|(1<<15)))
+    else if(mynumbers[i][k]==(num|(1<<15)))
     {
         printf("Error\n");
     }
@@ -102,14 +102,14 @@ void setNum(int num,int i,int k,int hvb)
             setPermission(num,blockNumI,l,2);
         }
     }
-    if(getPermission(num,i,k,0))
+    if(getPermission2(num,i,k,0))
     {
-        if(numbers[i][k]!=(num|(1<<15)))
+        if(mynumbers[i][k]!=(num|(1<<15)))
         {
             boolChange=true;
-            countNumbers++;
-            numbers[i][k]=(num|(1<<15));
-            settedNum(num,i,k);
+            countmynumbers++;
+            mynumbers[i][k]=(num|(1<<15));
+            settedNum(num+1,i,k);
         }
     }
     else
@@ -223,15 +223,22 @@ void tree(void)
         }
     }
 }
-void zeroNum(int *array[9][9])
+void zeroNum(int array[9][9])
 {
     int i,k;
     for(i=0; i<9; i++)
     {
         for(k=0; k<9; k++)
         {
+            mynumbers[i][k]=0;
+        }
+    }
+    for(i=0; i<9; i++)
+    {
+        for(k=0; k<9; k++)
+        {
             if(array[i][k]!=0){
-             setNum(array[i][k],i,k,0);
+             setNum(array[i][k]-1,i,k,0);
             }
         }
     }
@@ -332,13 +339,13 @@ void start()
                 }
             }
         }
-        if(countNumbers<81)
+        if(countmynumbers<81)
         {
             printf("tree\n");
         }
     }
 }
-int mainSud(int *array[][])
+int mainSud(int array[][])
 {
     zeroNum(array);
     start();

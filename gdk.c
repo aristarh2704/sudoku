@@ -4,10 +4,11 @@
 static GtkWidget *buttons[9][9];
 static int numbers[9][9];
 static int countBut=0;
+GtkWidget *myWindow;
 int myindex;
 gboolean eventWindow (GtkWidget *a,GdkEvent *aa,gpointer aaa){
  if(aa->key.string[0]==13){
-  mainSud(&numbers);
+  mainSud(numbers);
   myindex=0;
   return(TRUE);
  }else{
@@ -46,8 +47,11 @@ gint eventDestroy (GtkWidget *a,GdkEvent *aa,gpointer aaa){
 void registerButton(GtkWidget *button){
  static int countBut=0;
  numbers[countBut/9][countBut%9]=0;
- buttons[countBut/9][countBut%9]=button;
- gtk_signal_connect((GtkObject *)button,"key_press_event",GTK_SIGNAL_FUNC(eventPress),countBut);
+ int a=countBut/9;
+ int b=countBut%9;
+ getCoord(&a,&b,2);
+ buttons[a][b]=button;
+ gtk_signal_connect((GtkObject *)button,"key_press_event",GTK_SIGNAL_FUNC(eventPress),a*9+b);
  countBut++;
 }
 GtkWidget *makeButton(){
@@ -91,13 +95,14 @@ GtkWidget *makeTable(){
 }
 int main(int argc,char *argv[]){
  gtk_init(&argc,&argv);
- GtkWidget *myWindow =gtk_window_new (GTK_WINDOW_TOPLEVEL);
+ myWindow =gtk_window_new (GTK_WINDOW_TOPLEVEL);
  gtk_signal_connect(GTK_OBJECT(myWindow),"delete-event",GTK_SIGNAL_FUNC(eventDelete),NULL);
  gtk_signal_connect(GTK_OBJECT(myWindow),"destroy",GTK_SIGNAL_FUNC(eventDestroy),NULL);
  gtk_signal_connect(GTK_OBJECT(myWindow),"key_press_event",GTK_SIGNAL_FUNC(eventWindow),NULL);
  gtk_window_set_title(myWindow,"Sudoku game.");
  GtkWidget *table=makeTable();
  gtk_container_add((GtkContainer *)myWindow,table);
+ gtk_window_set_default_size(myWindow,192,255);
  gtk_widget_show_all(myWindow);
  gtk_main();
 }
